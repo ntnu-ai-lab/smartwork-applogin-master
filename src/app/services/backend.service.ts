@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, BehaviorSubject  } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Appuser } from '../appuser';
-import { environment } from '../../environments/environment';
 import { catchError, map } from 'rxjs/operators';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +24,7 @@ export class BackendService {
 
   constructor(
     private http: HttpClient,
+    private config: ConfigService,
     private route: ActivatedRoute
   ) {
     this.route.queryParams.subscribe(params => {
@@ -36,7 +37,7 @@ export class BackendService {
 
     // Validate token and get username
   private validateToken(): void {
-    this.http.get(`${environment.backend.endpoints.validateTokenUrl}?token=${this.token}`, 
+    this.http.get(`${this.config.endpoints.validateTokenUrl}?token=${this.token}`, 
       { responseType: 'text' })
       .pipe(
         map(response => {
@@ -67,7 +68,7 @@ export class BackendService {
       username: this.username,
       password: password
     };
-    return this.http.post<string>(environment.backend.endpoints.savePasswordUrl, user,
+    return this.http.post<string>(this.config.endpoints.savePasswordUrl, user,
       { responseType: 'text' as 'json' }
     );
   }
